@@ -1,17 +1,22 @@
 from flask import Flask
 from flask_rest import Api
-from flask_restful import Resource,reqparse  
-import sqlite3
+from security import Authenticate, identity
+from flask_jwt import JWT
+from resources.item import Item, ItemRegister
+from resources.user import UserRegister
 
 app = Flask(__name__)
+app.secret_key = "sid"
 api = Api(app)
 
-connection = sqlite3.connect("database.db")
-cursor = connection.cursor()
-create_query = "CREATE TABLE users(id INT, username VARCHAR, password VARCHAR)"
-cursor.execute(create_query)
-connection.commit()
-connection.close()
+jwt = JWT(app, Authenticate, identity)
+
+
+
+api.add_resource(Item, "/item/<str:name>")
+api.add_Resource(ItemRegister,"/itemlist")
+api.add_Resource(UserRegister, "/register")
+
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True) 
